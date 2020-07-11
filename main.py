@@ -1,6 +1,6 @@
 from MQ2 import MQ2
 from network import WLAN 
-from mqtt import umqtt.MQTTClient 
+from umqtt.simple import MQTTClient
 import wifimgr
 import machine
 import utime
@@ -43,11 +43,13 @@ while True:
 	# Publish message to MQTT
 	topic = "kitchen/mq2"
 
-	client = MQTTClient("hassio.local", topic, user="hassio", password="sugartwo", port=1883) 
+	client = MQTTClient("hassio.local", topic, user="mqtt", password="hassio", port=1883) 
 
 	client.Connect()
 
-	client.publish(topic=topic, msg=message)
+	data = ujson.dumps(message)
+	
+	client.publish(topic=topic, msg=data)
 
 	# Wait
 	utime.sleep(60)
