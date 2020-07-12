@@ -6,6 +6,7 @@ import machine
 import utime
 import ujson
 
+# MQ2 Sensor Analog Pin is connected to this pin on the ESP32
 pin = machine.Pin(34) 
 
 sensor = MQ2(pinData = pin)
@@ -25,31 +26,52 @@ while True:
 			pass  # you shall not pass :D
 
 	# Read Sensor data
-	smokeValue = sensor.readSmoke()
-	lpgValue = sensor.readLPG()
-	methaneValue = sensor.readMethane()
-	hydrogenValue = sensor.readHydrogen()
 
-	# MQTT Message
-	message = {}
+	gotValues = False
 
-	message["smoke"] = smokeValue
- 	message["lpg"] = lpgValue
-	message["methane"] = methaneValue
-	message["hydrogen"] = hydrogenValue
+	try:
+		smokeValue = sensor.readSmoke()
+		lpgValue = sensor.readLPG()
+		methaneValue = sensor.readMethane()
+		hydrogenValue = sensor.readHydrogen()
+		gotValues = True
+	except Exception as e:
+		print(e)
+		gotValues = False
 
-	print(message)
+	if gotValues:
+		# MQTT Message
+		message = {}
 
-	# Publish message to MQTT
-	topic = "kitchen/mq2"
+		message["smoke"] = smokeValue
+		message["lpg"] = lpgValue
+		message["methane"] = methaneValue
+		message["hydrogen"] = hydrogenValue
 
-	client = MQTTClient("hassio.local", topic, user="mqtt", password="hassio", port=1883) 
+		print(message)
 
-	client.Connect()
+		# Publish message to MQTT
 
-	data = ujson.dumps(message)
-	
-	client.publish(topic=topic, msg=data)
+		client = MQTTClient(client_id="kitchen-mq2", server="10.0.1.200", user="mqtt", password="hassio") 
+
+		connected = False
+
+		while not connected:
+			try:
+				client.connect()
+				connected = True
+			except:
+				connected = False
+				utime.sleep(5)
+
+		topic = "/kitchen/mq2"
+
+		data = bytes(ujson.dumps(message),"utf-8")
+		
+		client.publish(topic=topic, msg=data)
+
+		if connected:
+			client.disconnect()
 
 	# Wait
 	utime.sleep(60)
