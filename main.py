@@ -5,6 +5,7 @@ import wifimgr
 import machine
 import utime
 import ujson
+import sys
 
 # MQ2 Sensor Analog Pin is connected to this pin on the ESP32
 pin = machine.Pin(34) 
@@ -28,6 +29,9 @@ while True:
 	# Read Sensor data
 
 	gotValues = False
+	retries = 4
+
+	retry = 0
 
 	try:
 		smokeValue = sensor.readSmoke()
@@ -38,6 +42,10 @@ while True:
 	except Exception as e:
 		print(e)
 		gotValues = False
+		retry = retry + 1
+		if retry == retries:
+			print("Retries exceeded, restarting...")
+			machine.reset()
 
 	if gotValues:
 		# MQTT Message
