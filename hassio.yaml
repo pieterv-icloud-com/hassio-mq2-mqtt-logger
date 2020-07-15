@@ -1,0 +1,25 @@
+sensor:
+  - platform: mqtt
+    name: "Smoke"
+    unique_id: kitchen-mq2-smoke
+    state_topic: "/kitchen/mq2"
+    unit_of_measurement: 'ppm'
+    value_template: "{{ value_json.smoke | round(1) }}"
+  - platform: mqtt
+    name: "LPG"
+    unique_id: kitchen-mq2-lpg
+    state_topic: "/kitchen/mq2"
+    unit_of_measurement: 'ppm'
+    value_template: "{{ value_json.lpg | round(1) }}"
+  - platform: mqtt
+    name: "Methane"
+    unique_id: kitchen-mq2-methane
+    state_topic: "/kitchen/mq2"
+    unit_of_measurement: 'ppm'
+    value_template: "{{ value_json.methane | round(1) }}"
+  - platform: mqtt
+    name: "Hydrogen"
+    unique_id: kitchen-mq2-hydrogen
+    state_topic: "/kitchen/mq2"
+    unit_of_measurement: 'ppm'
+    value_template: "{{ value_json.hydrogen | roun

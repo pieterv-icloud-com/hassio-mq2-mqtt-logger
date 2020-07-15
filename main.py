@@ -15,6 +15,7 @@ sensor = MQ2(pinData = pin)
 print("Calibrating")
 sensor.calibrate()
 print("Calibration completed")
+
 print("Base resistance:{0}".format(sensor._ro))
 
 while True:
