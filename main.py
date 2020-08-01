@@ -10,7 +10,8 @@ import sys
 # MQ2 Sensor Analog Pin is connected to this pin on the ESP32
 pin = machine.Pin(34) 
 
-sensor = MQ2(pinData = pin)
+# This runs on a Lipo battery, 3.7V
+sensor = MQ2(pinData = pin, baseVoltage = 3.3)
 
 print("Calibrating")
 sensor.calibrate()
